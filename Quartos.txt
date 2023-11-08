@@ -1,0 +1,1 @@
+Quarto [id=1, tipo=VIP, camas=2, descricao=NORMAL, preco=59.9, status=DESOCUPADO]

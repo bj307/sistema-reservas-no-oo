@@ -1,0 +1,1 @@
+Reserva [id=1, cliente=Cliente [id=1, nome=Kaio, cpf=11111111111, email=email@email.com, celular=11111111111], quarto=Quarto [id=1, tipo=VIP, camas=2, descricao=NORMAL, preco=59.9, status=OCUPADO], diarias=10, total=599.0]
