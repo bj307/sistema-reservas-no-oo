@@ -5,38 +5,39 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import quartos.*;
-import clientes.*;
-import reservas.*;
 
 public class main {
 
 	public static void main(String[] args) {
-
-		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		ArrayList<Quarto> quartos = new ArrayList<Quarto>();
-		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+		
+		Cliente[] clientes = new Cliente[50];
+		Quarto[] quartos = new Quarto[50];
+		Reserva[] reservas = new Reserva[50];
 
 		Cliente cliente = new Cliente(1, "Kaio", "11111111111", "email@email.com", "11111111111");
-		clientes.add(cliente);
+		clientes[0] = cliente;
 		Quarto quarto = new Quarto(1, "VIP", 02, "NORMAL", 59.90, "DESOCUPADO");
-		quartos.add(quarto);
-		salvarEmArquivo(clientes, "Clientes");
-		salvarEmArquivo(quartos, "Quartos");
+		quartos[0] = quarto;
+		salvarClientes(clientes);
+		salvarQuartos(quartos);
 		exibirOpcoes(clientes, reservas, quartos);
 	}
 
-	public static void exibirOpcoes(ArrayList<Cliente> clientes, ArrayList<Reserva> reservas,
-			ArrayList<Quarto> quartos) {
+	
+	//metodo que exibe o joptionpane para exibir o menu com as opçoes
+	//ele recebe 3 parametros que sao os vetores que armazena os dados de cliente, reserva e quartos
+	public static void exibirOpcoes(Cliente[] clientes, Reserva[] reservas, Quarto[] quartos) {
+		//vetor de opçoes do menu
 		String[] opcoes = { "Cadastrar cliente", "Cadastrar quarto", "Efetuar reserva", "Listar clientes",
 				"Listar quartos", "Listar reservas", "Sair" };
 
+		//foi usado while(true) para manter o menu aberto
 		while (true) {
 			int escolha = JOptionPane.showOptionDialog(null, "Selecione uma opção", "Opções",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoes, opcoes[0]);
 
+			//aqui é identificado qual a opçao foi selecionada pelo usuario e chama o metodo equivalente
 			if (escolha >= 0) {
 				if (opcoes[escolha].equals("Sair")) {
 					System.exit(0);
@@ -94,7 +95,8 @@ public class main {
 		}
 	}
 
-	public static void cadastrarCliente(ArrayList<Cliente> clientes) {
+	//metodo para cadastrar um cliente, recebe os dados, salva o cliente e adiciona no vetor clientes
+	public static void cadastrarCliente(Cliente[] clientes) {
 
 		// recebe nome
 		String nome = JOptionPane.showInputDialog(null, "Insira o nome do cliente:", "Cadastro de cliente",
@@ -166,13 +168,18 @@ public class main {
 			}
 		}
 
-		int id = clientes.size() + 1;
-		Cliente cliente = new Cliente(id, nome, cpf, email, celular);
-		clientes.add(cliente);
-		salvarEmArquivo(clientes, "Clientes");
+		int p = verificaPosicaoVetor(clientes);
+		if(p == -1) {
+			//return erro
+		} else {
+			Cliente cliente = new Cliente(p, nome, cpf, email, celular);
+			clientes[p] = cliente;
+		}
+		salvarClientes(clientes);
 	}
 
-	public static void cadastrarQuarto(ArrayList<Quarto> quartos) {
+	//metodo para cadastrar quarto, salvar e adicionar no vetor de quartos
+	public static void cadastrarQuarto(Quarto[] quartos) {
 		// recebe tipo
 		String tipo = JOptionPane.showInputDialog(null, "Insira o tipo do quarto (VIP ou COMUM):", "Cadastro de quarto",
 				JOptionPane.PLAIN_MESSAGE);
@@ -245,14 +252,18 @@ public class main {
 			}
 		}
 
-		int id = quartos.size() + 1;
-		Quarto quarto = new Quarto(id, tipo, Integer.parseInt(camas), descricao, Double.parseDouble(preco), status);
-		quartos.add(quarto);
-		salvarEmArquivo(quartos, "Quartos");
+		int p = verificaPosicaoVetor(quartos);
+		if (p == -1) {
+			//return erro
+		} else {
+			Quarto quarto = new Quarto(p, tipo, Integer.parseInt(camas), descricao, Double.parseDouble(preco), status);
+			quartos[p] = quarto;
+		}
+		salvarQuartos(quartos);
 	}
 
-	public static void efetuarReserva(ArrayList<Reserva> reservas, Cliente cliente, Quarto quarto) {
-
+	//metodo para efetuar reserva, salvar e adicionar no vetor de reservas
+	public static void efetuarReserva(Reserva[] reservas, Cliente cliente, Quarto quarto) {
 
 		// recebe diarias
 		String diarias = JOptionPane.showInputDialog(null, "Insira o número de diárias:", "Faça uma reserva",
@@ -271,35 +282,53 @@ public class main {
 		
 		double total = Integer.parseInt(diarias) * quarto.preco;
 
-		int id = reservas.size() + 1;
-		Reserva reserva = new Reserva(id, cliente, quarto, Integer.parseInt(diarias), total);
-		quarto.status = "OCUPADO";
-		reservas.add(reserva);
-		salvarEmArquivo(reservas, "Reservas");
-	}
-
-	public static void listarClientes(ArrayList<Cliente> clientes) {
-		clientes.forEach(cliente -> System.out.println(cliente.toString()));
-	}
-
-	public static void listarQuartos(ArrayList<Quarto> quartos) {
-		quartos.forEach(quarto -> System.out.println(quarto.toString()));
-	}
-
-	public static void listarReservas(ArrayList<Reserva> reservas) {
-		reservas.forEach(reserva -> System.out.println(reserva.toString()));
-	}
-
-	public static <T> void salvarEmArquivo(ArrayList<T> array, String nomeArquivo) {
 		
-		File file = new File(nomeArquivo + ".txt");
+		int p = verificaPosicaoVetor(reservas);
+		if (p == -1) {
+			//joption pane
+		} else {
+			Reserva reserva = new Reserva(p, cliente, quarto, Integer.parseInt(diarias), total);
+			quarto.status = "OCUPADO";
+			reservas[p] = reserva;
+		}
+		salvarReservas(reservas);
+	}
+
+	//o metodo lista todos os clientes do vetor de clientes
+	public static void listarClientes(Cliente[] clientes) {
+		for (Cliente cliente : clientes) {
+			System.out.println(cliente);
+		}
+	}
+
+	//o metodo vai listar todos os quartos do vetor quartos
+	public static void listarQuartos(Quarto[] quartos) {
+		for (Quarto quarto : quartos) {
+			System.out.println(quarto);
+		}
+	}
+
+	//o metodo vai listar todas as reservas do vetor reservas
+	public static void listarReservas(Reserva[] reservas) {
+		for (Reserva reserva : reservas) {
+			System.out.println(reserva);
+		}
+	}
+	
+	//metodo recebe o vetor de clientes e salva em um arquivo Clientes.txt
+	public static void salvarClientes(Cliente[] clientes) {
+		//cria um arquivo com nome Clientes.txt para verificar se ele ja existe na pasta
+		//se exister deve ser apagado
+		File file = new File("Clientes.txt");
         if (file.exists()) {
             file.delete();
         }
-		
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo + ".txt"))) {
-			for (T t : array) {
-				writer.write(t.toString()); 
+        
+        //salva um novo arquivo Clientes.txt com os dados atualizados do vetor clientes
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Clientes.txt"))) {
+			for (Cliente c : clientes) {
+				//falta usar verificaçao das posição nula no vetor
+				writer.write(c.imprimir()); 
 				writer.newLine();
 			}
         } catch (IOException e) {
@@ -307,30 +336,84 @@ public class main {
         }
 	}
 	
-	public static Cliente buscarCliente(ArrayList<Cliente> clientes, String cpf) {
+	//metodo recebe o vetor de reservas e salva em um arquivo Reservas.txt
+	public static void salvarReservas(Reserva[] reservas) {
+		File file = new File("Reservas.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Reservas.txt"))) {
+			for (Reserva r : reservas) {
+				//falta usar verificaçao das posição nula no vetor
+				writer.write(r.imprimir()); 
+				writer.newLine();
+			}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	//metodo recebe o vetor de quartos e salva em um arquivo Quartos.txt
+	public static void salvarQuartos(Quarto[] quartos) {
+		File file = new File("Quartos.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Quartos.txt"))) {
+			for (Quarto q : quartos) {
+				//falta usar verificaçao das posição nula no vetor
+				writer.write(q.imprimir()); 
+				writer.newLine();
+			}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	//o metodo busca no vetor de clientes um cliente com cpf especifico
+	public static Cliente buscarCliente(Cliente[] clientes, String cpf) {
 		Cliente cliente = null;
 		
-		for (int i = 0; i < clientes.size(); i++) {
-			if (clientes.get(i).cpf.equals(cpf)) {
-				cliente = clientes.get(i);
+		for (int i = 0; i < clientes.length; i++) {
+			if (clientes[i].cpf.equals(cpf)) {
+				cliente = clientes[i];
 			}
 		}
 		
 		return cliente;
 	}
 	
-	public static Quarto buscarQuarto(ArrayList<Quarto> quartos, int id) {
+	//o metodo busca um quarto no vetor de quartos pelo id
+	public static Quarto buscarQuarto(Quarto[] quartos, int id) {
 		Quarto quarto = null;
 		
-		if (id > quartos.size()) {
+		if (id > quartos.length) {
 			return null;
-		} else if (quartos.get(id-1).status.equals("OCUPADO")) {
+		} else if (quartos[id-1].status.equals("OCUPADO")) {
 			return null;
 		} else {
-			quarto = quartos.get(id-1);
+			quarto = quartos[id-1];
 		}
 		
 		return quarto;
+	}
+	
+	//esse metodo verifica uma posição nula no vetor e o retorna
+	//é utilizado para saber se é possivel adicionar mais dados em um vetor
+	public static int verificaPosicaoVetor(Object[] vetor) {
+		int posicao = -1;
+		int i = 0;
+		while (posicao == -1 && i > vetor.length) {
+			if (vetor[i] == null) {
+				posicao = i;
+			} else {
+				i++;
+			}
+		}
+		
+		return posicao;
 	}
 
 }

@@ -1,12 +1,12 @@
-package clientes;
+package sistema;
 
 public class Cliente {
 
-	public int id;
-	public String nome;
-	public String cpf;
-	public String email;
-	public String celular;
+	int id;
+	String nome;
+	String cpf;
+	String email;
+	String celular;
 	
 	public Cliente(int id, String nome, String cpf, String email, String celular) {
 		this.id = id;
@@ -15,9 +15,8 @@ public class Cliente {
 		this.email = email;
 		this.celular = celular;
 	}
-
-	@Override
-	public String toString() {
+	
+	public String imprimir() {
 		return "Cliente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", email=" + email + ", celular=" + celular
 				+ "]";
 	}

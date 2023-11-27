@@ -1,14 +1,12 @@
-package reservas;
-import quartos.*;
-import clientes.*;
+package sistema;
 
 public class Reserva {
 
-	public int id;
-	public Cliente cliente;
-	public Quarto quarto;
-	public int diarias;
-	public double total;
+	int id;
+	Cliente cliente;
+	Quarto quarto;
+	int diarias;
+	double total;
 	
 	public Reserva(int id, Cliente cliente, Quarto quarto, int diarias, double total) {
 		super();
@@ -18,9 +16,8 @@ public class Reserva {
 		this.diarias = diarias;
 		this.total = quarto.preco * diarias;
 	}
-
-	@Override
-	public String toString() {
+	
+	public String imprimir() {
 		return "Reserva [id=" + id + ", cliente=" + cliente + ", quarto=" + quarto + ", diarias=" + diarias + ", total="
 				+ total + "]";
 	}
