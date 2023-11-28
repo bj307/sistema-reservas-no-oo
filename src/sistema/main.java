@@ -170,7 +170,7 @@ public class main {
 
 		int p = verificaPosicaoVetor(clientes);
 		if(p == -1) {
-			//return erro
+			JOptionPane.showConfirmDialog(null, "Nosso hotel encontra-se lotado.");
 		} else {
 			Cliente cliente = new Cliente(p, nome, cpf, email, celular);
 			clientes[p] = cliente;
@@ -254,7 +254,7 @@ public class main {
 
 		int p = verificaPosicaoVetor(quartos);
 		if (p == -1) {
-			//return erro
+			JOptionPane.showConfirmDialog(null, "Nosso hotel já esta com a capacidade máxima de quartos.");
 		} else {
 			Quarto quarto = new Quarto(p, tipo, Integer.parseInt(camas), descricao, Double.parseDouble(preco), status);
 			quartos[p] = quarto;
@@ -285,7 +285,7 @@ public class main {
 		
 		int p = verificaPosicaoVetor(reservas);
 		if (p == -1) {
-			//joption pane
+			JOptionPane.showConfirmDialog(null, "Nosso hotel encontra-se lotado, sem vagas para reservas.");
 		} else {
 			Reserva reserva = new Reserva(p, cliente, quarto, Integer.parseInt(diarias), total);
 			quarto.status = "OCUPADO";
@@ -327,9 +327,12 @@ public class main {
         //salva um novo arquivo Clientes.txt com os dados atualizados do vetor clientes
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("Clientes.txt"))) {
 			for (Cliente c : clientes) {
-				//falta usar verificaçao das posição nula no vetor
-				writer.write(c.imprimir()); 
-				writer.newLine();
+				if (c != null) {
+					writer.write(c.imprimir()); 
+					writer.newLine();
+				} else {
+					writer.newLine();
+				}
 			}
         } catch (IOException e) {
             e.printStackTrace();
@@ -345,9 +348,12 @@ public class main {
         
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("Reservas.txt"))) {
 			for (Reserva r : reservas) {
-				//falta usar verificaçao das posição nula no vetor
-				writer.write(r.imprimir()); 
-				writer.newLine();
+				if (r != null) {
+					writer.write(r.imprimir()); 
+					writer.newLine();
+				} else {
+					writer.newLine();
+				}
 			}
         } catch (IOException e) {
             e.printStackTrace();
@@ -363,9 +369,12 @@ public class main {
         
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("Quartos.txt"))) {
 			for (Quarto q : quartos) {
-				//falta usar verificaçao das posição nula no vetor
-				writer.write(q.imprimir()); 
-				writer.newLine();
+				if (q != null) {
+					writer.write(q.imprimir()); 
+					writer.newLine();
+				} else {
+					writer.newLine();
+				}
 			}
         } catch (IOException e) {
             e.printStackTrace();
