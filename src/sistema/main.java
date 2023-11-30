@@ -30,7 +30,7 @@ public class main {
 	public static void exibirOpcoes(Cliente[] clientes, Reserva[] reservas, Quarto[] quartos) {
 		//vetor de opçoes do menu
 		String[] opcoes = { "Cadastrar cliente", "Cadastrar quarto", "Efetuar reserva", "Listar clientes",
-				"Listar quartos", "Listar reservas", "Sair" };
+				"Listar quartos", "Listar reservas", "Ver dados", "Cancelar reserva", "Sair" };
 
 		//foi usado while(true) para manter o menu aberto
 		while (true) {
@@ -84,6 +84,23 @@ public class main {
 					else if (opcoes[escolha].equals("Listar reservas")) {
 						listarReservas(reservas);
 					}
+					//ver dados
+					else if (opcoes[escolha].equals("Ver dados")) {
+						verDados(clientes, reservas, quartos);
+					}
+					//cancelar reserva
+					else if (opcoes[escolha].equals("Cancelar reserva")) {
+						String id = JOptionPane.showInputDialog(null, "Insira o ID da reserva:", "Buscar reserva",
+								JOptionPane.PLAIN_MESSAGE);
+						
+						Reserva reserva = buscarReserva(reservas, Integer.parseInt(id));
+						
+						while (reserva == null) {
+							id = (String) JOptionPane.showInputDialog(null, "Insira o ID da reserva:", "RESERVA NÃO ENCONTRADA",
+									JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.warningIcon"), null, null);
+						}
+						cancelarReserva(reservas, reserva.id);
+					}
 					//sair
 					else {
 						System.exit(0);
@@ -93,6 +110,147 @@ public class main {
 				System.exit(0);
 			}
 		}
+	}
+	
+	//submenu para ver dados unicos
+	public static void verDados(Cliente[] clientes, Reserva[] reservas, Quarto[] quartos) {
+		//vetor de opçoes do menu
+		String[] opcoes = { "Ver cliente", "Ver quarto", "Ver reserva", "Ver reservas por cliente", "Voltar" };
+
+		//foi usado while(true) para manter o menu aberto
+		while (true) {
+			int escolha = JOptionPane.showOptionDialog(null, "Selecione uma opção", "Opções",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcoes, opcoes[0]);
+
+			//aqui é identificado qual a opçao foi selecionada pelo usuario e chama o metodo equivalente
+			if (escolha >= 0) {
+				if (opcoes[escolha].equals("Voltar")) {
+					return;
+				} else {
+					if (opcoes[escolha].equals("Ver cliente")) {
+						String cpf = JOptionPane.showInputDialog(null, "Insira o CPF do cliente:", "Buscar cliente",
+								JOptionPane.PLAIN_MESSAGE);
+						Cliente cliente = buscarCliente(clientes, cpf);
+						
+						while (cliente == null) {
+							cpf = (String) JOptionPane.showInputDialog(null, "Insira o CPF do cliente:", "CLIENTE NÃO ENCONTRADO",
+									JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.warningIcon"), null, null);
+						}
+						
+						System.out.println(cliente.imprimir());
+					} 
+					else if (opcoes[escolha].equals("Ver quarto")) {
+						String id = JOptionPane.showInputDialog(null, "Insira o ID do quarto:", "Buscar quarto",
+								JOptionPane.PLAIN_MESSAGE);
+						
+						Quarto quarto = lerQuarto(quartos, Integer.parseInt(id));
+						
+						while (quarto == null) {
+							id = (String) JOptionPane.showInputDialog(null, "Insira o ID do quarto:", "QUARTO NÃO ENCONTRADO OU ESTÁ OCUPADO",
+									JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.warningIcon"), null, null);
+						}
+						
+						System.out.println(quarto.imprimir());
+					} 
+					else if (opcoes[escolha].equals("Ver reserva")) {
+						String id = JOptionPane.showInputDialog(null, "Insira o ID da reserva:", "Buscar reserva",
+								JOptionPane.PLAIN_MESSAGE);
+						
+						Reserva reserva = buscarReserva(reservas, Integer.parseInt(id));
+						
+						while (reserva == null) {
+							id = (String) JOptionPane.showInputDialog(null, "Insira o ID da reserva:", "RESERVA NÃO ENCONTRADA",
+									JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.warningIcon"), null, null);
+						}
+						
+						System.out.println(reserva.imprimir());
+					}
+					else if (opcoes[escolha].equals("Ver reservas por cliente")) {
+						String cpf = JOptionPane.showInputDialog(null, "Insira o CPF do cliente:", "Buscar cliente",
+								JOptionPane.PLAIN_MESSAGE);
+						Cliente cliente = buscarCliente(clientes, cpf);
+						
+						while (cliente == null) {
+							cpf = (String) JOptionPane.showInputDialog(null, "Insira o CPF do cliente:", "CLIENTE NÃO ENCONTRADO",
+									JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.warningIcon"), null, null);
+						}
+						
+						verReservasCliente(reservas, cpf);
+					}
+					else {
+						return;
+					}
+				}
+			} else {
+				return;
+			}
+		}
+	}
+	
+	public static void cancelarReserva(Reserva[] reservas, int id) {
+		reservas[id].quarto.status = "DESOCUPADO";
+		reservas[id] = null;
+	}
+	
+	//ver reservas de um cliente
+	public static void verReservasCliente(Reserva[] reservas, String cpf) {
+		for (int i = 0; i < reservas.length; i++) {
+			if (reservas[i] != null && reservas[i].cliente.cpf.equals(cpf)) {
+				System.out.println(reservas[i].imprimir());
+			}
+		}
+	}
+	
+	//o metodo busca no vetor de clientes um cliente com cpf especifico
+	public static Cliente buscarCliente(Cliente[] clientes, String cpf) {
+		Cliente cliente = null;
+		
+		for (int i = 0; i < clientes.length; i++) {
+			if (clientes[i] != null && clientes[i].cpf.equals(cpf)) {
+				cliente = clientes[i];
+			}
+		}
+		
+		return cliente;
+	}
+	
+	public static Quarto lerQuarto(Quarto[] quartos, int id) {
+		Quarto quarto = null;
+		
+		if (id > quartos.length) {
+			return null;
+		} else {
+			quarto = quartos[id];
+		}
+		
+		return quarto;
+	}
+	
+	//o metodo busca um quarto no vetor de quartos pelo id
+	public static Quarto buscarQuarto(Quarto[] quartos, int id) {
+		Quarto quarto = null;
+		
+		if (id > quartos.length) {
+			return null;
+		} else if (quartos[id].status.equals("OCUPADO")) {
+			return null;
+		} else {
+			quarto = quartos[id];
+		}
+		
+		return quarto;
+	}
+	
+	//o metodo busca uma reserva no vetor de reservas pelo id
+	public static Reserva buscarReserva(Reserva[] reservas, int id) {
+		Reserva reserva = null;
+		if (id > reservas.length) {
+			return null;
+		} else {
+			reserva = reservas[id];
+		}
+		
+		return reserva;
 	}
 
 	//metodo para cadastrar um cliente, recebe os dados, salva o cliente e adiciona no vetor clientes
@@ -381,34 +539,6 @@ public class main {
         }
 	}
 	
-	//o metodo busca no vetor de clientes um cliente com cpf especifico
-	public static Cliente buscarCliente(Cliente[] clientes, String cpf) {
-		Cliente cliente = null;
-		
-		for (int i = 0; i < clientes.length; i++) {
-			if (clientes[i].cpf.equals(cpf)) {
-				cliente = clientes[i];
-			}
-		}
-		
-		return cliente;
-	}
-	
-	//o metodo busca um quarto no vetor de quartos pelo id
-	public static Quarto buscarQuarto(Quarto[] quartos, int id) {
-		Quarto quarto = null;
-		
-		if (id > quartos.length) {
-			return null;
-		} else if (quartos[id-1].status.equals("OCUPADO")) {
-			return null;
-		} else {
-			quarto = quartos[id-1];
-		}
-		
-		return quarto;
-	}
-	
 	//esse metodo verifica uma posição nula no vetor e o retorna
 	//é utilizado para saber se é possivel adicionar mais dados em um vetor
 	public static int verificaPosicaoVetor(Object[] vetor) {
@@ -424,5 +554,4 @@ public class main {
 		
 		return posicao;
 	}
-
 }
